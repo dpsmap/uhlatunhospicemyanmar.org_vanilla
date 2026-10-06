@@ -1,0 +1,12 @@
+/* Zawgyi Font Styling */
+@font-face {
+    font-family: 'zawgyi';
+    src: url('../fonts/190612085512Zawgyi.eot');
+    src: url('../fonts/190612085512Zawgyi.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/190612085512Zawgyi.woff') format('woff');
+    font-display: swap;
+}
+.zawgyi { font-family: 'zawgyi', sans-serif !important; }
+body, h1, h2, h3, h4, h5, h6, p, blockquote, li, a {
+    font-family: 'zawgyi', sans-serif !important;
+}

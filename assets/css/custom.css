@@ -1,0 +1,32 @@
+/* Zero-Overhead Enhancements & Fixes */
+#n2-ss-2 {
+    position: relative;
+    overflow: hidden;
+}
+.n2-ss-slide {
+    position: relative;
+    width: 100%;
+}
+#n2-ss-2-arrow-previous {
+    position: absolute;
+    left: 25px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    z-index: 10;
+}
+#n2-ss-2-arrow-next {
+    position: absolute;
+    right: 25px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    z-index: 10;
+}
+@media only screen and (max-width: 980px) {
+    .mobile_nav.opened #mobile_menu {
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+    }
+}
