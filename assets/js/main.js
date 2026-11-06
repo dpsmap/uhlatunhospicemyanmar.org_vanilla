@@ -84,21 +84,42 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 4. Zero-Overhead Homepage Carousel / Slider
     const sliderContainer = document.querySelector('#n2-ss-2');
+    const placeholder = document.querySelector('#n2-ss-2-placeholder');
+    if (placeholder) {
+        placeholder.style.display = 'none';
+    }
+
     if (sliderContainer) {
+        sliderContainer.classList.add('n2-ss-loaded');
+        sliderContainer.classList.remove('n2-ss-load-fade');
+
         const slides = sliderContainer.querySelectorAll('.n2-ss-slide');
         let currentSlide = 0;
         const totalSlides = slides.length;
+
+        // Ensure background images are set on slide background containers
+        slides.forEach(slide => {
+            const bgImage = slide.querySelector('.n2-ss-slide-background-image');
+            const img = slide.querySelector('img');
+            if (bgImage && img && img.getAttribute('src')) {
+                const src = img.getAttribute('src');
+                bgImage.style.backgroundImage = `url("${src}")`;
+                bgImage.style.backgroundSize = 'cover';
+                bgImage.style.backgroundPosition = 'center center';
+                bgImage.style.backgroundRepeat = 'no-repeat';
+            }
+        });
 
         function showSlide(index) {
             slides.forEach((slide, i) => {
                 slide.style.transition = 'opacity 0.8s ease-in-out';
                 if (i === index) {
-                    slide.style.display = 'block';
                     slide.style.opacity = '1';
+                    slide.style.visibility = 'visible';
                     slide.style.zIndex = '2';
                 } else {
-                    slide.style.display = 'none';
                     slide.style.opacity = '0';
+                    slide.style.visibility = 'hidden';
                     slide.style.zIndex = '1';
                 }
             });
@@ -142,18 +163,40 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // 5. Divi Scroll Animations
+    if (window.et_animation_data && Array.isArray(window.et_animation_data)) {
+        window.et_animation_data.forEach(item => {
+            const elements = document.querySelectorAll('.' + item.class);
+            elements.forEach(el => {
+                el.classList.add(item.style);
+                el.style.opacity = '1';
+                el.style.visibility = 'visible';
+            });
+        });
+    }
+
     if ('IntersectionObserver' in window) {
         const animatedElements = document.querySelectorAll('.et_animated');
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     entry.target.classList.add('et-animated');
+                    entry.target.style.opacity = '1';
+                    entry.target.style.visibility = 'visible';
                     observer.unobserve(entry.target);
                 }
             });
         }, { threshold: 0.15 });
 
-        animatedElements.forEach(el => observer.observe(el));
+        animatedElements.forEach(el => {
+            el.style.opacity = '1';
+            el.style.visibility = 'visible';
+            observer.observe(el);
+        });
+    } else {
+        document.querySelectorAll('.et_animated').forEach(el => {
+            el.style.opacity = '1';
+            el.style.visibility = 'visible';
+        });
     }
 
     // Helper Toast Notification
