@@ -1,12 +1,6 @@
-/* Zawgyi Font Styling */
-@font-face {
-    font-family: 'zawgyi';
-    src: url('../fonts/190612085512Zawgyi.eot');
-    src: url('../fonts/190612085512Zawgyi.eot?#iefix') format('embedded-opentype'),
-         url('../fonts/190612085512Zawgyi.woff') format('woff');
-    font-display: swap;
-}
-.zawgyi { font-family: 'zawgyi', sans-serif !important; }
+/* Updated Font Styling - Unicode Myanmar */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Myanmar:wght@300;400;500;600;700&display=swap');
+
 body, h1, h2, h3, h4, h5, h6, p, blockquote, li, a {
-    font-family: 'zawgyi', sans-serif !important;
+  font-family: 'Open Sans', 'Noto Sans Myanmar', 'Pyidaungsu', 'Myanmar Text', sans-serif !important;
 }

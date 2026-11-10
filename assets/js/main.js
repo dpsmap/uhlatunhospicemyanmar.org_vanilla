@@ -4,6 +4,40 @@
  */
 
 document.addEventListener('DOMContentLoaded', () => {
+    // 0. Active Navigation Page Highlight
+    const updateActiveNav = () => {
+        let path = window.location.pathname.split('/').pop() || 'index.html';
+        if (!path || path === '') path = 'index.html';
+        const cleanPath = path.toLowerCase();
+
+        const allMenus = document.querySelectorAll('#top-menu, #mobile_menu');
+        allMenus.forEach(menu => {
+            menu.querySelectorAll('li').forEach(li => {
+                li.classList.remove('current-menu-item', 'current_page_item', 'current-menu-ancestor', 'current_page_parent', 'current_page_ancestor');
+            });
+
+            const links = menu.querySelectorAll('a');
+            links.forEach(link => {
+                const href = link.getAttribute('href');
+                if (!href || href === '#') return;
+                const linkFile = href.split('/').pop().toLowerCase();
+
+                if (linkFile === cleanPath || (cleanPath === 'donate.html' && linkFile === 'donation.html')) {
+                    const li = link.closest('li');
+                    if (li) {
+                        li.classList.add('current-menu-item', 'current_page_item');
+                        const parentLi = li.parentElement.closest('li');
+                        if (parentLi) {
+                            parentLi.classList.add('current-menu-ancestor', 'current_page_parent', 'current_page_ancestor');
+                        }
+                    }
+                }
+            });
+        });
+    };
+
+    updateActiveNav();
+
     // 1. Mobile Menu Toggle
     const mobileToggle = document.querySelector('.mobile_menu_bar_toggle');
     const mobileNav = document.querySelector('.mobile_nav');
@@ -18,6 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
             mobileMenuUl.innerHTML = topMenu.innerHTML;
             mobileNav.appendChild(mobileMenuUl);
         }
+        updateActiveNav();
 
         const toggleHandler = (e) => {
             e.preventDefault();
@@ -198,6 +233,58 @@ document.addEventListener('DOMContentLoaded', () => {
             el.style.visibility = 'visible';
         });
     }
+
+    // 6. Facebook Hybrid Widget Background Detection
+    const initFacebookHybrid = () => {
+        const containers = document.querySelectorAll('.fb-hybrid-container');
+        if (containers.length === 0) return;
+
+        // Test reachability to Facebook with a 3.5s timeout
+        let isReachable = false;
+        let testImage = new Image();
+        const timeout = setTimeout(() => {
+            testImage.src = '';
+            // Timeout reached: stay on custom cards
+        }, 3500);
+
+        testImage.onload = () => {
+            clearTimeout(timeout);
+            isReachable = true;
+            // Facebook is reachable, smoothly mount the live iframes
+            containers.forEach(c => {
+                const href = c.getAttribute('data-fb-href');
+                const slot = c.querySelector('.fb-iframe-slot');
+                const card = c.querySelector('.fb-card');
+                if (href && slot && card) {
+                    const iframe = document.createElement('iframe');
+                    iframe.setAttribute('allowtransparency', 'true');
+                    iframe.setAttribute('frameborder', '0');
+                    iframe.setAttribute('scrolling', 'no');
+                    iframe.style.border = 'none';
+                    iframe.style.overflow = 'hidden';
+                    iframe.style.width = '100%';
+                    iframe.style.height = '300px';
+                    iframe.src = `https://www.facebook.com/plugins/page.php?href=${encodeURIComponent(href)}&tabs=timeline&width=400&height=300&small_header=true&adapt_container_width=true&hide_cover=false&show_facepile=true`;
+                    
+                    iframe.onload = () => {
+                        slot.appendChild(iframe);
+                        slot.style.display = 'block';
+                        card.style.display = 'none';
+                    };
+                }
+            });
+        };
+
+        testImage.onerror = () => {
+            clearTimeout(timeout);
+            // Blocked or offline: preserve custom cards
+        };
+
+        // Trigger ping test
+        testImage.src = 'https://www.facebook.com/favicon.ico?' + new Date().getTime();
+    };
+
+    initFacebookHybrid();
 
     // Helper Toast Notification
     function showToast(message) {
