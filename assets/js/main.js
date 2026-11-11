@@ -4,12 +4,76 @@
  */
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Dynamic Header Scroll Shrink (> 40px)
+    const siteHeader = document.querySelector('.site-header, #main-header');
+    if (siteHeader) {
+        const handleHeaderScroll = () => {
+            if (window.scrollY > 40) {
+                siteHeader.classList.add('header-scrolled');
+            } else {
+                siteHeader.classList.remove('header-scrolled');
+            }
+        };
+        window.addEventListener('scroll', handleHeaderScroll, { passive: true });
+        handleHeaderScroll();
+    }
+
+    // Modern Semantic Mobile Navigation Drawer Toggle
+    const mobileNavToggle = document.querySelector('.site-mobile-toggle');
+    if (mobileNavToggle && siteHeader) {
+        const toggleMobileDrawer = (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            const isOpen = siteHeader.classList.toggle('drawer-open');
+            mobileNavToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+        };
+
+        mobileNavToggle.addEventListener('click', toggleMobileDrawer);
+
+        // Close drawer when clicking outside the header
+        document.addEventListener('click', (e) => {
+            if (!siteHeader.contains(e.target) && siteHeader.classList.contains('drawer-open')) {
+                siteHeader.classList.remove('drawer-open');
+                mobileNavToggle.setAttribute('aria-expanded', 'false');
+            }
+        });
+
+        // Close drawer when clicking any navigation link
+        const mobileLinks = siteHeader.querySelectorAll('.site-mobile-drawer a');
+        mobileLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                siteHeader.classList.remove('drawer-open');
+                mobileNavToggle.setAttribute('aria-expanded', 'false');
+            });
+        });
+    }
+
     // 0. Active Navigation Page Highlight
     const updateActiveNav = () => {
         let path = window.location.pathname.split('/').pop() || 'index.html';
         if (!path || path === '') path = 'index.html';
         const cleanPath = path.toLowerCase();
 
+        // 1. Modern semantic nav items
+        const navLinks = document.querySelectorAll('.site-nav-link, .site-dropdown-menu a, .site-mobile-link, .site-mobile-sublist a');
+        navLinks.forEach(link => {
+            const href = link.getAttribute('href');
+            if (!href || href === '#') return;
+            const linkFile = href.split('/').pop().toLowerCase();
+
+            if (linkFile === cleanPath || (cleanPath === 'donate.html' && linkFile === 'donation.html')) {
+                const li = link.closest('li');
+                if (li) {
+                    li.classList.add('active');
+                    const parentLi = li.parentElement.closest('li');
+                    if (parentLi) {
+                        parentLi.classList.add('active');
+                    }
+                }
+            }
+        });
+
+        // 2. Legacy selectors fallback
         const allMenus = document.querySelectorAll('#top-menu, #mobile_menu');
         allMenus.forEach(menu => {
             menu.querySelectorAll('li').forEach(li => {
